@@ -55,7 +55,7 @@ def main():
                         selected_sq = (row, col)
                         user_clicks.append(selected_sq)
 
-                    # 1st CLICK RULES
+                    # 1st CLICK RULES (1 square clicked)
                     if len(user_clicks) == 1:
                         sq1 = board[row][col]
                         if sq1 == '-':  # sq is empty
@@ -67,16 +67,23 @@ def main():
                             selected_sq = ()
                             user_clicks = []
 
-                    # 2nd CLICK RULES
+                    # 2nd CLICK RULES (2 squares clicked) -- user_clicks = [(sq1), (sq2)] = [(row1, col1), (row2, col2)]
                     if len(user_clicks) == 2:
+                        sq1_row = user_clicks[0][0]
+                        sq1_col = user_clicks[0][1]
+                        sq1 = board[sq1_row][sq1_col]
                         sq2 = board[row][col]
+                        # current click is also second click, so sq2's row = row and sq2's col = col
 
-                        if sq2 == '-':  # second sq is empty
+                        # IMPLEMENT MOVE RULES HERE
+
+                        if sq2 == '-':  # second sq is empty - moving piece to empty tile
                             move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
 
                         # checking if piece being captured is not your own
                         elif (sq2 == 'wt' and game_state.black_turn) or (sq2 == 'bk' and not game_state.black_turn):
                             move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
+
                         selected_sq = ()
                         user_clicks = []
 
