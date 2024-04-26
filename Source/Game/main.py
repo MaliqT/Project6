@@ -17,7 +17,7 @@ def main():
     board = game_state.board
     display_surface = py.Surface((600, 600))
     run = True
-    vs_ai = vs_player = show_rules = False
+    vs_ai = vs_player = show_rules = hint = False
     #  py.draw.rect(screen, py.Color('brown'), (40, 40, 500, 500), 10)  # creates board border
 
     selected_sq = ()  # clicked square
@@ -70,7 +70,8 @@ def main():
                         game_state = Game_State()
                         board = game_state.board
 
-                    # if hint_button.collidepoint(local):  # show hint
+                    if hint_button.collidepoint(local):  # show hint
+                        hint = not hint
 
                 else:
                     col = local[0] // SQUARE_SIZE
@@ -107,10 +108,12 @@ def main():
                         # IMPLEMENT MOVE RULES HERE
 
                         if sq2 == '-':  # second sq is empty - moving piece to empty tile
+                            hint = False
                             move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
 
                         # checking if piece being captured is not your own
                         elif (sq2 == 'wt' and game_state.black_turn) or (sq2 == 'bk' and not game_state.black_turn):
+                            hint = False
                             move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
 
                         selected_sq = ()
@@ -123,7 +126,7 @@ def main():
 
             print_rules(screen)
         elif vs_player or vs_ai:  # game screen
-            game_state.draw_board(display_surface, board)
+            game_state.create_hint(display_surface, board) if hint else game_state.draw_board(display_surface, board)
             screen.blit(display_surface, (0, 0))
 
             py.draw.rect(screen, py.Color('gray45'), quit_button)
