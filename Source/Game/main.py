@@ -23,11 +23,11 @@ def main():
     selected_sq = ()  # clicked square
     user_clicks = []  # both clicked squares
 
-    player_button = py.Rect(320, 200, 170, 35)
-    ai_button = py.Rect(310, 280, 190, 35)
+    player_button = py.Rect(320, 160, 170, 35)
+    ai_button = py.Rect(310, 220, 190, 35)
     rules_button = py.Rect(340, 360, 130, 35)
     back_button = py.Rect(650, 40, 100, 35)
-
+    exit_button = py.Rect(353, 400, 100, 35)
     quit_button = py.Rect(650, 40, 100, 35)
     hint_button = py.Rect(650, 80, 100, 35)
 
@@ -35,7 +35,7 @@ def main():
     ai_text = font.render('player vs. computer', True, py.Color('white'))
     rules_text = font.render('show rules', True, py.Color('white'))
     back_text = font.render('back', True, py.Color('white'))
-
+    exit_text = font.render('exit', True, py.Color('white'))
     quit_text = font.render('quit', True, py.Color('white'))
     hint_text = font.render('hint', True, py.Color('white'))
 
@@ -43,7 +43,7 @@ def main():
     ai_text_center = ai_text.get_rect(center=ai_button.center)
     rules_text_center = rules_text.get_rect(center=rules_button.center)
     back_text_center = back_text.get_rect(center=back_button.center)
-
+    exit_text_center = exit_text.get_rect(center=exit_button.center)
     quit_text_center = quit_text.get_rect(center=quit_button.center)
     hint_text_center = hint_text.get_rect(center=hint_button.center)
 
@@ -63,7 +63,8 @@ def main():
                         show_rules = True
                     if back_button.collidepoint(local):
                         show_rules = False
-
+                    if exit_button.collidepoint(local):
+                        run = False
                 elif local[0] > 600:
                     if quit_button.collidepoint(local):
                         vs_player = vs_ai = False
@@ -144,6 +145,9 @@ def main():
 
             py.draw.rect(screen, py.Color('gray45'), rules_button)
             screen.blit(rules_text, rules_text_center)
+
+            py.draw.rect(screen, py.Color('gray45'), exit_button)
+            screen.blit(exit_text, exit_text_center)
 
         py.display.update()  # updates screen
     py.quit()
