@@ -2,24 +2,27 @@ import pygame as py
 
 BOARD_SIZE = 8
 SQUARE_SIZE = 75
+
+
 class Game_State():
-    def __init__(self):
+    def __init__(self, ):
         self.board = [
-            ['-', 'bk', '-', 'bk', '-', 'bk', '-', 'bk'],
-            ['bk', '-', 'bk', '-', 'bk', '-', 'bk', '-'],
-            ['-', 'bk', '-', 'bk', '-', 'bk', '-', 'bk'],
-            ['-', '-', '-', '-', '-', '-', '-', '-'],
-            ['-', '-', '-', '-', '-', '-', '-', '-'],
+            ['-', 'wt', '-', 'wt', '-', 'wt', '-', 'wt'],
             ['wt', '-', 'wt', '-', 'wt', '-', 'wt', '-'],
             ['-', 'wt', '-', 'wt', '-', 'wt', '-', 'wt'],
-            ['wt', '-', 'wt', '-', 'wt', '-', 'wt', '-']
+            ['-', '-', '-', '-', '-', '-', '-', '-'],
+            ['-', '-', '-', '-', '-', '-', '-', '-'],
+            ['bk', '-', 'bk', '-', 'bk', '-', 'bk', '-'],
+            ['-', 'bk', '-', 'bk', '-', 'bk', '-', 'bk'],
+            ['bk', '-', 'bk', '-', 'bk', '-', 'bk', '-']
+
         ]
-        self.your_turn = True
+        self.black_turn = True
         self.turn_log = []
+
     def draw_board(self, screen, board):
-        IMAGES = {}
-        IMAGES['wt'] = py.transform.scale(py.image.load('../Constants/Images/wt.png'), (SQUARE_SIZE, SQUARE_SIZE))
-        IMAGES['bk'] = py.transform.scale(py.image.load('../Constants/Images/bk.png'), (SQUARE_SIZE, SQUARE_SIZE))
+        IMAGES = {'wt': py.transform.scale(py.image.load('../Constants/Images/wt.png'), (SQUARE_SIZE, SQUARE_SIZE)),
+                  'bk': py.transform.scale(py.image.load('../Constants/Images/bk.png'), (SQUARE_SIZE, SQUARE_SIZE))}
 
         for row in range(BOARD_SIZE):
             for col in range(BOARD_SIZE):
@@ -40,4 +43,6 @@ class Game_State():
         piece_taken = board[sq2_row][sq2_col]
         board[sq2_row][sq2_col] = piece
 
-        self.your_turn = not self.your_turn
+        if piece_taken == '-':  # non-capture move
+            self.black_turn = not self.black_turn
+        # else ???
