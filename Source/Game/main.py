@@ -69,7 +69,14 @@ def main():
 
                     # 2nd CLICK RULES
                     if len(user_clicks) == 2:
-                        move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
+                        sq2 = board[row][col]
+
+                        if sq2 == '-':  # second sq is empty
+                            move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
+
+                        # checking if piece being captured is not your own
+                        elif (sq2 == 'wt' and game_state.black_turn) or (sq2 == 'bk' and not game_state.black_turn):
+                            move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
                         selected_sq = ()
                         user_clicks = []
 
