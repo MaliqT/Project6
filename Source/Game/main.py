@@ -17,17 +17,17 @@ def main():
     board = game_state.board
     display_surface = py.Surface((600, 600))
     run = True
-    vs_ai = vs_player = show_rules = False
+    vs_ai = vs_player = show_rules = hint = False
     #  py.draw.rect(screen, py.Color('brown'), (40, 40, 500, 500), 10)  # creates board border
 
     selected_sq = ()  # clicked square
     user_clicks = []  # both clicked squares
 
-    player_button = py.Rect(320, 200, 170, 35)
-    ai_button = py.Rect(310, 280, 190, 35)
+    player_button = py.Rect(320, 160, 170, 35)
+    ai_button = py.Rect(310, 220, 190, 35)
     rules_button = py.Rect(340, 360, 130, 35)
     back_button = py.Rect(650, 40, 100, 35)
-
+    exit_button = py.Rect(353, 400, 100, 35)
     quit_button = py.Rect(650, 40, 100, 35)
     hint_button = py.Rect(650, 80, 100, 35)
 
@@ -35,7 +35,7 @@ def main():
     ai_text = font.render('player vs. computer', True, py.Color('white'))
     rules_text = font.render('show rules', True, py.Color('white'))
     back_text = font.render('back', True, py.Color('white'))
-
+    exit_text = font.render('exit', True, py.Color('white'))
     quit_text = font.render('quit', True, py.Color('white'))
     hint_text = font.render('hint', True, py.Color('white'))
 
@@ -43,7 +43,7 @@ def main():
     ai_text_center = ai_text.get_rect(center=ai_button.center)
     rules_text_center = rules_text.get_rect(center=rules_button.center)
     back_text_center = back_text.get_rect(center=back_button.center)
-
+    exit_text_center = exit_text.get_rect(center=exit_button.center)
     quit_text_center = quit_text.get_rect(center=quit_button.center)
     hint_text_center = hint_text.get_rect(center=hint_button.center)
 
@@ -63,14 +63,16 @@ def main():
                         show_rules = True
                     if back_button.collidepoint(local):
                         show_rules = False
-
+                    if exit_button.collidepoint(local):
+                        run = False
                 elif local[0] > 600:
                     if quit_button.collidepoint(local):
                         vs_player = vs_ai = False
                         game_state = Game_State()
                         board = game_state.board
 
-                    # if hint_button.collidepoint(local):  # show hint
+                    if hint_button.collidepoint(local):  # show hint
+                        hint = not hint
 
                 else:
                     col = local[0] // SQUARE_SIZE
@@ -107,10 +109,12 @@ def main():
                         # IMPLEMENT MOVE RULES HERE
 
                         if sq2 == '-':  # second sq is empty - moving piece to empty tile
+                            hint = False
                             move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
 
                         # checking if piece being captured is not your own
                         elif (sq2 == 'wt' and game_state.black_turn) or (sq2 == 'bk' and not game_state.black_turn):
+                            hint = False
                             move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
 
                         selected_sq = ()
@@ -123,7 +127,7 @@ def main():
 
             print_rules(screen)
         elif vs_player or vs_ai:  # game screen
-            game_state.draw_board(display_surface, board)
+            game_state.create_hint(display_surface, board) if hint else game_state.draw_board(display_surface, board)
             screen.blit(display_surface, (0, 0))
 
             py.draw.rect(screen, py.Color('gray45'), quit_button)
@@ -141,6 +145,9 @@ def main():
 
             py.draw.rect(screen, py.Color('gray45'), rules_button)
             screen.blit(rules_text, rules_text_center)
+
+            py.draw.rect(screen, py.Color('gray45'), exit_button)
+            screen.blit(exit_text, exit_text_center)
 
         py.display.update()  # updates screen
     py.quit()

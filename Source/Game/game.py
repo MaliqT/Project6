@@ -6,8 +6,7 @@ Black = (0, 0, 0)
 White = (255, 255, 255)
 
 def print_rules(screen):
-    pygame.font.init()
-    font = pygame.font.SysFont(None, 24)
+    font = pygame.font.SysFont('Arial', 16)
 
     rules = [
         "Checkers Rules:",
