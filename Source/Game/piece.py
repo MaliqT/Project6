@@ -1,7 +1,7 @@
 class Piece:
-    def __init__(self, pos, type, color):
+    def __init__(self, pos, color):
         self.color = color # Black or Red
-        self.type = type
+        # self.type = type
         self.pos = pos
         self.king = False # piece is not king at first
 
