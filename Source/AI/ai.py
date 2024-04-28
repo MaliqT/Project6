@@ -3,14 +3,15 @@ from Source.Game.piece import *
 
 
 board = [
-            ['-', 'bk', '-', 'bk', '-', 'bk', '-', 'bk'],
-            ['bk', '-', 'bk', '-', 'bk', '-', 'bk', '-'],
-            ['-', 'bk', '-', 'bk', '-', 'bk', '-', 'bk'],
-            ['-', '-', '-', '-', '-', '-', 'wt', '-'],
-            ['-', '-', '-', '-', '-', '-', '-', '-'],
-            ['wt', '-', 'wt', '-', '-', '-', 'wt', '-'],
-            ['-', 'wt', '-', 'wt', '-', 'wt', '-', 'wt'],
-            ['wt', '-', 'wt', '-', 'wt', '-', 'wt', '-']
+            [0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0],
+            [0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [2, 0, 2, 0, 2, 0, 2, 0],
+            [0, 2, 0, 2, 0, 2, 0, 2],
+            [2, 0, 2, 0, 2, 0, 2, 0]
+
         ]
 
 # class Piece:
@@ -35,9 +36,9 @@ pieces = {}
 for x in range(8):
     for y in range(8):
         piece = None
-        if board[x][y] == 'bk':
+        if board[x][y] == 2:
             piece = Piece((y, x), "pawn", "black")
-        elif board[x][y] == 'wt':
+        elif board[x][y] == 1:
             piece = Piece((y, x), "pawn", "white")
         pieces[(x,y)] = piece
 class Move:
@@ -95,25 +96,25 @@ def move_or_jump(piece, board):
     for move in (moves):
 
         if valid_move(move, board):
-            if piece.color == "black":
+            if piece.color == 2 or piece.color == 4:  # if piece.color == "black":
                 # print(board[move[1]][move[0]])
-                if board[move[1]][move[0]] == "wt":
+                if board[move[1]][move[0]] == 1 or board[move[1]][move[0]] == 3:  # if board[move[1]][move[0]] == "wt":
                     x, y = move[0] - piece.pos[0], move[1] - piece.pos[1]
                     if valid_move((move[0] + x, move[1] + y), board) and board[move[1] + y][move[0] + x] == "-":
                         m = Move((move[0] + x, move[1] + y))
                         m.is_jump()
                         valid_moves = [m]
                         break
-            if piece.color == "white":
-                if board[move[1]][move[0]] == "bk":
+            if piece.color == 1 or piece.color == 3:  # if piece.color == "white":
+                if board[move[1]][move[0]] == 2 or board[move[1]][move[0]] == 4:  # if board[move[1]][move[0]] == "bk":
                     x, y = move[0] - piece.pos[0], move[1] - piece.pos[1]
-                    if valid_move((move[0] + x, move[1] + y), board) and board[move[1] + y][move[0] + x] == "-":
+                    if valid_move((move[0] + x, move[1] + y), board) and board[move[1] + y][move[0] + x] == 0:
                         m = Move((move[0] + x, move[1] + y))
                         m.is_jump()
                         valid_moves = [m]
                         break
             # print(board[move[1]][move[0]])
-            if board[move[1]][move[0]] == "-":
+            if board[move[1]][move[0]] == 0:
                 valid_moves.append(Move(move))
     return valid_moves
 

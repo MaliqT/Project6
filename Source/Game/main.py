@@ -94,12 +94,12 @@ def main():
                     # 1st CLICK RULES (1 square clicked)
                     if len(user_clicks) == 1:
                         sq1 = board[row][col]
-                        if sq1 == '-':  # sq is empty
+                        if sq1 == 0:  # sq is empty
                             selected_sq = ()
                             user_clicks = []
 
                         # clicked on wrong piece OR not your turn
-                        elif (sq1 == 'wt' and game_state.black_turn) or (sq1 == 'bk' and not game_state.black_turn):
+                        elif (sq1 % 2 != 0 and game_state.black_turn) or (sq1 % 2 == 0 and not game_state.black_turn):
                             selected_sq = ()
                             user_clicks = []
 
@@ -119,13 +119,13 @@ def main():
                             print("Invalid move! A piece can only move diagonally.")
                         else:
 
-                            if sq2 == '-' and (1 <= abs(sq1_row - row) <= 2) and (
+                            if sq2 == 0 and (1 <= abs(sq1_row - row) <= 2) and (
                                     1 <= abs(sq1_col - col) <= 2):  # second sq is empty - moving piece to empty tile
                                 # First check if we're capturing a piece or not
 
                                 if abs(sq1_row - row) == 2:
                                     # Attempting to capture a piece. Check for piece
-                                    if (((row + 1) and (col - 1)) != '-') or (((row + 1) and (col + 1)) != '-') or (((row - 1) and (col - 1)) != '-') or (((row - 1) and (col + 1)) != '-'):
+                                    if (((row + 1) and (col - 1)) != 0) or (((row + 1) and (col + 1)) != 0) or (((row - 1) and (col - 1)) != 0) or (((row - 1) and (col + 1)) != 0):
                                         print("There is a piece here. Captured it.")
                                         hint = False
                                         move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
@@ -137,8 +137,8 @@ def main():
                                 print("Invalid space. A piece is there.")
                                 # The player would need to capture the piece if possible
 
-                            selected_sq = ()
-                            user_clicks = []
+                        selected_sq = ()
+                        user_clicks = []
                         for i in board:
                             print(i)
                         if game_state.black_turn:

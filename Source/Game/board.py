@@ -1,21 +1,25 @@
 import pygame as py
+from piece import Piece
+from Source.AI.ai import move_or_jump
 
 BOARD_SIZE = 8
 SQUARE_SIZE = 75
-IMAGES = {'wt': py.transform.scale(py.image.load('../Constants/Images/wt.png'), (SQUARE_SIZE, SQUARE_SIZE)),
-          'bk': py.transform.scale(py.image.load('../Constants/Images/bk.png'), (SQUARE_SIZE, SQUARE_SIZE))}
+IMAGES = {1: py.transform.scale(py.image.load('../Constants/Images/wt.png'), (SQUARE_SIZE, SQUARE_SIZE)),
+          2: py.transform.scale(py.image.load('../Constants/Images/bk.png'), (SQUARE_SIZE, SQUARE_SIZE)),
+          3: py.transform.scale(py.image.load('../Constants/Images/wt.png'), (SQUARE_SIZE, SQUARE_SIZE)),
+          4: py.transform.scale(py.image.load('../Constants/Images/bk.png'), (SQUARE_SIZE, SQUARE_SIZE))}
 
 class Game_State():
     def __init__(self, ):
         self.board = [
-            ['-', 'wt', '-', 'wt', '-', 'wt', '-', 'wt'],
-            ['wt', '-', 'wt', '-', 'wt', '-', 'wt', '-'],
-            ['-', 'wt', '-', 'wt', '-', 'wt', '-', 'wt'],
-            ['-', '-', '-', '-', '-', '-', '-', '-'],
-            ['-', '-', '-', '-', '-', '-', '-', '-'],
-            ['bk', '-', 'bk', '-', 'bk', '-', 'bk', '-'],
-            ['-', 'bk', '-', 'bk', '-', 'bk', '-', 'bk'],
-            ['bk', '-', 'bk', '-', 'bk', '-', 'bk', '-']
+            [0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0],
+            [0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [2, 0, 2, 0, 2, 0, 2, 0],
+            [0, 2, 0, 2, 0, 2, 0, 2],
+            [2, 0, 2, 0, 2, 0, 2, 0]
 
         ]
         self.black_turn = True
@@ -32,7 +36,7 @@ class Game_State():
                     color = py.Color('black')
                 py.draw.rect(screen, color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
                 piece = board[row][col]
-                if piece != '-':
+                if piece != 0:
                     screen.blit(IMAGES[piece], (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
 
@@ -42,7 +46,7 @@ class Game_State():
                 color = py.Color('white') if (row + col) % 2 == 0 else py.Color('black')
                 py.draw.rect(screen, color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
                 piece = board[row][col]
-                if piece != '-':
+                if piece != 0:
                     screen.blit(IMAGES[piece], (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
     def move(self, board, sq1, sq2):
@@ -52,13 +56,17 @@ class Game_State():
         sq2_col = sq2[1]
 
         piece = board[sq1_row][sq1_col]
-        board[sq1_row][sq1_col] = '-'
+        board[sq1_row][sq1_col] = 0
         piece_taken = board[sq2_row][sq2_col]
         board[sq2_row][sq2_col] = piece
 
-        if piece_taken == '-':  # non-capture move
+        if piece_taken == 0:  # non-capture move
             self.black_turn = not self.black_turn
         # else ???
+        # print(move_or_jump(Piece((sq1_row, sq1_col), 'king' if piece > 2 else 'pawn', 'black' if piece % 2 == 0 else 'white'), board))
+        # print(move_or_jump(Piece((sq1_col, sq1_row), 'king' if piece > 2 else 'pawn', 'black' if piece % 2 == 0 else 'white'), board))
+
+
 
     def create_hint(self, screen, board):
         sq1 = ()
