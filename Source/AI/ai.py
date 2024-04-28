@@ -3,14 +3,14 @@ from Source.Game.piece import *
 
 
 board = [
-    ['-', 'bk', '-', 'bk', '-', 'bk', '-', 'bk'],
-    ['bk', '-', 'bk', '-', '-', '-', 'bk', '-'],
-    ['-', '-', '-', 'wt', '-', 'wt', '-', 'bk'],
-    ['-', '-', '-', '-', '-', '-', '-', '-'],
-    ['-', '-', '-', 'wt', '-', 'wt', '-', '-'],
-    ['wt', '-', '-', '-', '-', '-', '-', '-'],
-    ['-', 'wt', '-', 'wt', '-', '-', '-', 'wt'],
-    ['wt', '-', 'bk', '-', 'wt', '-', 'wt', '-']
+    [0, 1, 0, 1, 0, 1, 0, 1],
+    [1, 0, 1, 0, 0, 0, 1, 0],
+    [0, 0, 0, 2, 0, 2, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 2, 0, 2, 0, 0],
+    [2, 0, 0, 0, 0, 0, 0, 0],
+    [0, 2, 0, 2, 0, 0, 0, 2],
+    [2, 0, 1, 0, 2, 0, 2, 0]
         ]
 
 # class Piece:
@@ -35,9 +35,9 @@ pieces = {}
 for x in range(8):
     for y in range(8):
         piece = None
-        if board[x][y] == 'bk':
+        if board[x][y] == 1:
             piece = Piece((y, x), "black")
-        elif board[x][y] == 'wt':
+        elif board[x][y] == 2:
             piece = Piece((y, x), "white")
         pieces[(x,y)] = piece
 class Move:
@@ -93,7 +93,7 @@ def valid_move(pos, board):
 def jumps(move, piece, board):
     new_move = None
     x, y = move[0] - piece.pos[0], move[1] - piece.pos[1]
-    if valid_move((move[0] + x, move[1] + y), board) and board[move[1] + y][move[0] + x] == "-":
+    if valid_move((move[0] + x, move[1] + y), board) and board[move[1] + y][move[0] + x] == 0:
         m = Move((move[0] + x, move[1] + y))
         m.is_jump()
         new_move = m
@@ -108,7 +108,7 @@ def is_jump(piece, board):
     for move in moves:
         if valid_move(move, board):
             if piece.color == "black":
-                if board[move[1]][move[0]] == "wt":
+                if board[move[1]][move[0]] == 2:
                     jump = jumps(move, piece, board)
                     while jump:
                         valid_jumps.append(jump)
@@ -121,11 +121,11 @@ def make_move(selected_piece, next_pos, board):
     if selected_piece.jump:
         x, y = next_pos[0] - selected_piece.pos[0], next_pos[1] - selected_piece.pos[1]
         x, y = int(selected_piece.pos[0] + (x / 2)), int(selected_piece.pos[1] + (y / 2))
-        board[y][x] = "-"
-    board[selected_piece.pos[1]][selected_piece.pos[0]] = "-"
+        board[y][x] = 0
+    board[selected_piece.pos[1]][selected_piece.pos[0]] = 0
     selected_piece.pos = next_pos
     selected_piece.move = False
-    color = "bk" if selected_piece.color == "black" else "wt"
+    color = 1 if selected_piece.color == "black" else 2
     board[next_pos[1]][next_pos[0]] = color
 
 
@@ -151,7 +151,7 @@ def move_or_jump(piece, board):
 
     for move in moves:
         if valid_move(move, board):
-            if board[move[1]][move[0]] == "-":
+            if board[move[1]][move[0]] == 0:
                 valid_moves.append(Move(move))
 
     return valid_moves
