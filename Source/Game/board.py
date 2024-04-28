@@ -23,6 +23,8 @@ class Game_State():
 
         ]
         self.black_turn = True
+        self.more_jumps = False
+        self.last_piece = None
         self.turn_log = []
 
     def draw_hint(self, screen, board, sq1, sq2):  # assumption: sq1 and sq2 are diagonal
@@ -60,12 +62,84 @@ class Game_State():
         piece_taken = board[sq2_row][sq2_col]
         board[sq2_row][sq2_col] = piece
 
-        if piece_taken == 0:  # non-capture move
-            self.black_turn = not self.black_turn
+        row = (sq1_row + sq2_row) // 2
+        col = (sq1_col + sq2_col) // 2
+        between_piece = board[row][col]
+
+        if abs(sq1_row - sq2_row) == 2:  # jump move -- assume last piece is sq1
+            if between_piece != 0:  # jump was made
+                board[row][col] = 0
+                self.more_jumps = self.possible_jumps(board, sq2)
+                self.last_piece = (sq2_row, sq2_col)
+                if not self.more_jumps:
+                    self.black_turn = not self.black_turn
+
+        else:
+            if not self.more_jumps:
+                self.black_turn = not self.black_turn
         # else ???
         # print(move_or_jump(Piece((sq1_row, sq1_col), 'king' if piece > 2 else 'pawn', 'black' if piece % 2 == 0 else 'white'), board))
         # print(move_or_jump(Piece((sq1_col, sq1_row), 'king' if piece > 2 else 'pawn', 'black' if piece % 2 == 0 else 'white'), board))
 
+
+    def possible_jumps(self, board, sq1):
+        piece = board[sq1[0]][sq1[1]]
+        row = sq1[0]
+        col = sq1[1]
+        up = row - 2
+        down = row + 2
+        right = col + 2
+        left = col - 2
+
+        if self.black_turn:
+            if self.is_white(board[row - 1][col + 1]) and self.within_bounds(up, right): # moving up on board
+                if board[row - 2][col + 2] == 0:
+                    return True
+            if self.is_white(board[row - 1][col - 1]) and self.within_bounds(up, left):
+                if board[row - 2][col - 2] == 0:
+                    return True
+            if piece == 4:  # black king
+                if self.is_white(board[row + 1][col + 1]) and self.within_bounds(down, right): # moving down on board
+                    if board[row + 2][col + 2] == 0:
+                        return True
+                if self.is_white(board[row + 1][col - 1]) and self.within_bounds(down, left):
+                    if board[row + 2][col - 2] == 0:
+                        return True
+
+        else:
+            if self.is_black(board[row + 1][col + 1]) and self.within_bounds(down, right):
+                if board[row + 2][col + 2] == 0:
+                    return True
+            if self.is_black(board[row + 1][col - 1]) and self.within_bounds(down, left):
+                if board[row + 2][col - 2] == 0:
+                    return True
+
+            if piece == 3:  # white king
+                if self.is_black(board[row - 1][col + 1]) and self.within_bounds(up, right):
+                    if board[row - 2][col + 2] == 0:
+                        return True
+                if self.is_black(board[row - 1][col - 1]) and self.within_bounds(up, left):
+                    if board[row - 2][col - 2] == 0:
+                        return True
+        return False
+
+    def is_black(self, piece):
+        return True if piece != 0 and (piece == 2 or piece == 4) else False
+
+    def is_white(self, piece):
+        return True if piece % 2 != 0 else False
+
+    def within_bounds(self, row, col):
+        return True if 0 <= row <= 7 and 0 <= col <= 7 else False
+
+    def count_pieces(self, board):
+        pieces = {1: 0, 2: 0, 3: 0, 4: 0}
+        for row in range(BOARD_SIZE):
+            for col in range(BOARD_SIZE):
+                if board[row][col] != 0:
+                    pieces[board[row][col]] += 1
+
+        return pieces
 
 
     def create_hint(self, screen, board):

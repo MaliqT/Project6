@@ -117,6 +117,8 @@ def main():
                             print("Invalid move! A regular piece cannot move backwards.")
                         elif abs(sq1_row - row) != abs(sq1_col - col):
                             print("Invalid move! A piece can only move diagonally.")
+                        elif game_state.more_jumps and user_clicks[0] != game_state.last_piece:
+                            print("Invalid move! Must complete another jump.")
                         else:
 
                             if sq2 == 0 and (1 <= abs(sq1_row - row) <= 2) and (
