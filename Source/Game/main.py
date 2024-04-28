@@ -3,6 +3,7 @@ from sys import exit
 
 from board import Game_State
 from game import print_rules
+
 BOARD_SIZE = 8
 SQUARE_SIZE = 75
 
@@ -47,6 +48,10 @@ def main():
     quit_text_center = quit_text.get_rect(center=quit_button.center)
     hint_text_center = hint_text.get_rect(center=hint_button.center)
 
+    for i in board:
+        print(i)
+
+
     while run:
         for event in py.event.get():
             if event.type == py.QUIT:
@@ -89,12 +94,12 @@ def main():
                     # 1st CLICK RULES (1 square clicked)
                     if len(user_clicks) == 1:
                         sq1 = board[row][col]
-                        if sq1 == '-':  # sq is empty
+                        if sq1 == 0:  # sq is empty
                             selected_sq = ()
                             user_clicks = []
 
                         # clicked on wrong piece OR not your turn
-                        elif (sq1 == 'wt' and game_state.black_turn) or (sq1 == 'bk' and not game_state.black_turn):
+                        elif (sq1 % 2 != 0 and game_state.black_turn) or (sq1 % 2 == 0 and not game_state.black_turn):
                             selected_sq = ()
                             user_clicks = []
 
@@ -108,17 +113,38 @@ def main():
 
                         # IMPLEMENT MOVE RULES HERE
 
-                        if sq2 == '-':  # second sq is empty - moving piece to empty tile
-                            hint = False
-                            move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
+                        if (game_state.black_turn and (row > sq1_row)) or (not game_state.black_turn and (sq1_row > row)):
+                            print("Invalid move! A regular piece cannot move backwards.")
+                        elif abs(sq1_row - row) != abs(sq1_col - col):
+                            print("Invalid move! A piece can only move diagonally.")
+                        else:
 
-                        # checking if piece being captured is not your own
-                        elif (sq2 == 'wt' and game_state.black_turn) or (sq2 == 'bk' and not game_state.black_turn):
-                            hint = False
-                            move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
+                            if sq2 == 0 and (1 <= abs(sq1_row - row) <= 2) and (
+                                    1 <= abs(sq1_col - col) <= 2):  # second sq is empty - moving piece to empty tile
+                                # First check if we're capturing a piece or not
+
+                                if abs(sq1_row - row) == 2:
+                                    # Attempting to capture a piece. Check for piece
+                                    if (((row + 1) and (col - 1)) != 0) or (((row + 1) and (col + 1)) != 0) or (((row - 1) and (col - 1)) != 0) or (((row - 1) and (col + 1)) != 0):
+                                        print("There is a piece here. Captured it.")
+                                        hint = False
+                                        move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
+                                else:
+                                    hint = False
+                                    move = game_state.move(game_state.board, user_clicks[0], user_clicks[1])
+
+                            else:  # A piece is there and space is not empty
+                                print("Invalid space. A piece is there.")
+                                # The player would need to capture the piece if possible
 
                         selected_sq = ()
                         user_clicks = []
+                        for i in board:
+                            print(i)
+                        if game_state.black_turn:
+                            print("Black's Turn")
+                        else:
+                            print("White's Turn")
 
         if show_rules:  # rules screen
             screen.fill('bisque2')
