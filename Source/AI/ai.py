@@ -11,7 +11,8 @@ board = [
     [2, 0, 0, 0, 0, 0, 0, 0],
     [0, 2, 0, 2, 0, 0, 0, 2],
     [2, 0, 1, 0, 2, 0, 2, 0]
-        ]
+
+]
 
 # class Piece:
 #     def __init__(self, pos, type, color):
