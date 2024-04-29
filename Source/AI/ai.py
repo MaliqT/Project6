@@ -6,15 +6,14 @@ from Source.Game.piece import *
 
 board = [
     #0  1  2  3  4  5  6  7
-    [0, 1, 0, 1, 0, 1, 0, 1], # 0
-    [1, 0, 1, 0, 0, 0, 1, 0], # 1
-    [0, 0, 0, 2, 0, 2, 0, 1], # 2
-    [0, 0, 0, 0, 0, 0, 0, 0], # 3
-    [0, 0, 0, 2, 0, 2, 0, 0], # 4
-    [2, 0, 0, 0, 0, 0, 0, 0], # 5
-    [0, 2, 0, 2, 0, 0, 0, 2], # 6
-    [2, 0, 1, 0, 2, 0, 2, 0]  # 7
-
+    [0, 0, 2, 0, 0, 0, 0, 0], # 0
+    [0, 1, 0, 0, 0, 0, 0, 0], # 1
+    [0, 0, 0, 0, 0, 0, 0, 0], # 2
+    [0, 1, 0, 0, 0, 0, 0, 0], # 3
+    [0, 0, 0, 0, 0, 0, 0, 0], # 4
+    [0, 0, 0, 1, 0, 0, 0, 0], # 5
+    [0, 0, 0, 0, 0, 0, 0, 0], # 6
+    [0, 0, 0, 0, 0, 0, 0, 0]  # 7
 ]
 
 # class Piece:
@@ -117,9 +116,12 @@ def is_jump(piece, board):
                     # while jump:
                     if jump:
                         valid_jumps.append(jump)
-                        # jump = jumps(jump.pos, piece, board)
-                        # print(jump)
-    # for valid_jumps
+            else:
+                if board[move[1]][move[0]] == 1:
+                    jump = jumps(move, piece, board)
+                    # while jump:
+                    if jump:
+                        valid_jumps.append(jump)
     return valid_jumps
 
 def make_move(selected_piece, next_pos, board):
@@ -259,11 +261,10 @@ def moves_and_results(board, player):
 
     return result
 
-
 p1 = Player("black")
 p2 = Player("white")
-p1.pieces[8].make_king()
-# p1.pieces[8].jump = True
+p2.pieces[0].make_king()
+p2.pieces[0].jump = True
 
 a = moves_and_results(board, p2)
 
@@ -274,6 +275,3 @@ a = moves_and_results(board, p2)
 
 # c
 a
-
-
-
