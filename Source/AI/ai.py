@@ -1,16 +1,19 @@
 import copy
+# from queue import PriorityQueue
+
 from Source.Game.piece import *
 
 
 board = [
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 0, 0, 1, 0],
-    [0, 0, 0, 2, 0, 2, 0, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 2, 0, 2, 0, 0],
-    [2, 0, 0, 0, 0, 0, 0, 0],
-    [0, 2, 0, 2, 0, 0, 0, 2],
-    [2, 0, 1, 0, 2, 0, 2, 0]
+    #0  1  2  3  4  5  6  7
+    [0, 1, 0, 1, 0, 1, 0, 1], # 0
+    [1, 0, 1, 0, 0, 0, 1, 0], # 1
+    [0, 0, 0, 2, 0, 2, 0, 1], # 2
+    [0, 0, 0, 0, 0, 0, 0, 0], # 3
+    [0, 0, 0, 2, 0, 2, 0, 0], # 4
+    [2, 0, 0, 0, 0, 0, 0, 0], # 5
+    [0, 2, 0, 2, 0, 0, 0, 2], # 6
+    [2, 0, 1, 0, 2, 0, 2, 0]  # 7
 
 ]
 
@@ -111,9 +114,10 @@ def is_jump(piece, board):
             if piece.color == "black":
                 if board[move[1]][move[0]] == 2:
                     jump = jumps(move, piece, board)
-                    while jump:
+                    # while jump:
+                    if jump:
                         valid_jumps.append(jump)
-                        jump = jumps(jump.pos, piece, board)
+                        # jump = jumps(jump.pos, piece, board)
                         # print(jump)
     # for valid_jumps
     return valid_jumps
@@ -163,7 +167,7 @@ def avaliable_pieces(board, player):
     jumps = []
     for piece in player.pieces:
         b = copy.deepcopy(board)
-        p = copy.copy(piece)
+        p = copy.deepcopy(piece)
         moves = move_or_jump(p, b)
         # print(piece.pos)
         if len(moves) >= 1:
@@ -188,15 +192,22 @@ def all_posible_moves(board, player):
     units = avaliable_pieces(b1, player)
 
     for unit in units:
+        # jumps = []
         moves = []
+        u = copy.deepcopy(unit)
         b1 = copy.deepcopy(board)
-        unit_moves = move_or_jump(unit, b1)
+        unit_moves = move_or_jump(u, b1)
         if len(unit_moves) >= 1:
             if unit_moves[0].jump:
                 j = []
+                unit.jump = True
                 for m in unit_moves:
-                    j.append(m.pos)
-                jumps.append(list(set(j)))
+                    # if unit.king == False:
+                    if m.pos not in j:
+                        j.append(m.pos)
+                    # else:
+                    #     j.append(m.pos)
+                jumps.append(j)
             else:
                 for m in unit_moves:
                     moves.append(m.pos)
@@ -205,17 +216,63 @@ def all_posible_moves(board, player):
         return jumps
     return all_moves
 
+# given a piece finds returns a list of tuples (jump position, board after jump)
+def find_jumps(piece, board):
+    jump = is_jump(piece, board)
+    if not jump:
+        return []
+    path = []
+    # paths = []
+    for next_pos in jump:
+        board2 = copy.deepcopy(board)
+        piece.jump = True
+        if len(jump) >= 2 and jump[-2] == next_pos:
+            if jump[-1].pos[0] == jump[-1].pos[0] or jump[-1].pos[1] == jump[-1].pos[1]:
+                p1 = copy.deepcopy(piece)
+                board2 = make_move(p1, next_pos.pos, board2)
+                path.append((next_pos.pos, board2))
+                path.extend(find_jumps(p1, board2))
+                board2 = copy.deepcopy(board)
+
+        else:
+            board2 = make_move(piece, next_pos.pos, board2)
+            path.append((next_pos.pos, board2))
+            path.extend(find_jumps(piece, board2))
+    return path
+
+# returns the list of all moves or jumps board each move is a list of tuples (move or jump position, board after move or jump)
+def moves_and_results(board, player):
+
+    result = []
+    player_pieces = avaliable_pieces(copy.deepcopy(board), player)
+
+    for piece in player_pieces:
+        if piece.jump == True:
+            result.append(find_jumps(piece, board))
+        else:
+            moves = move_or_jump(piece, board)
+            piece_moves = []
+            for move in moves:
+                new_board = make_move(copy.deepcopy(piece), move.pos, copy.deepcopy(board))
+                piece_moves.append((move.pos, new_board))
+            result.append(piece_moves)
+
+    return result
+
+
 p1 = Player("black")
 p2 = Player("white")
-
-# a = avaliable_pieces(board, p1)
-# a2 = avaliable_pieces(board, p2)
-
-
 p1.pieces[8].make_king()
+# p1.pieces[8].jump = True
 
-a = all_posible_moves(board, p1)
+a = moves_and_results(board, p2)
 
+
+# a = moves_and_results(board, p1)
+# a = all_posible_moves(board, p1)
+# m = move_or_jump(p1.pieces[8], board)
+
+# c
 a
 
 

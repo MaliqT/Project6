@@ -4,6 +4,7 @@ class Piece:
         # self.type = type
         self.pos = pos
         self.king = False # piece is not king at first
+        self.jump = False
 
     def make_king(self):
         self.king = True
