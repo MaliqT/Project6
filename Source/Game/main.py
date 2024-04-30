@@ -18,7 +18,7 @@ def main():
     board = gs.board
     display_surface = py.Surface((600, 600))
     start_screen = run = True
-    turn_screen = rules_screen = game_screen = hint = False
+    turn_screen = rules_screen = game_screen = difficulty_screen = hint = False
 
     selected_sq = ()  # clicked square
     user_clicks = []  # both clicked squares
@@ -32,6 +32,9 @@ def main():
     hint_button = py.Rect(650, 80, 100, 35)
     first_button = py.Rect(340, 320, 130, 35)
     second_button = py.Rect(340, 360, 130, 35)
+    easy_button = py.Rect(340, 300, 130, 35)
+    medium_button = py.Rect(340, 340, 130, 35)
+    hard_button = py.Rect(340, 380, 130, 35)
 
     player_text = font.render('player vs. player', True, py.Color('white'))
     ai_text = font.render('player vs. computer', True, py.Color('white'))
@@ -42,6 +45,10 @@ def main():
     hint_text = font.render('hint', True, py.Color('white'))
     first_text = font.render('go first?', True, py.Color('white'))
     second_text = font.render('go second?', True, py.Color('white'))
+    easy_text = font.render('easy', True, py.Color('white'))
+    medium_text = font.render('medium', True, py.Color('white'))
+    hard_text = font.render('hard', True, py.Color('white'))
+
 
     player_text_center = player_text.get_rect(center=player_button.center)
     ai_text_center = ai_text.get_rect(center=ai_button.center)
@@ -52,6 +59,11 @@ def main():
     hint_text_center = hint_text.get_rect(center=hint_button.center)
     first_text_center = first_text.get_rect(center=first_button.center)
     second_text_center = second_text.get_rect(center=second_button.center)
+    easy_text_center = easy_text.get_rect(center=easy_button.center)
+    medium_text_center = medium_text.get_rect(center=medium_button.center)
+    hard_text_center = hard_text.get_rect(center=hard_button.center)
+
+
 
     for i in board:
         print(i)
@@ -85,15 +97,29 @@ def main():
                         run = False
                 elif turn_screen:
                     if first_button.collidepoint(local):
-                        gs.black_turn = game_screen = gs.players_turn = gs.vs_ai = True
+                        gs.black_turn = difficulty_screen = gs.players_turn = True
                         turn_screen = False
                     elif second_button.collidepoint(local):
                         gs.black_turn = turn_screen = gs.players_turn = False
-                        game_screen = gs.vs_ai = True
+                        difficulty_screen = True
                 elif rules_screen:
                     if back_button.collidepoint(local):
                         rules_screen = False
                         start_screen = True
+                elif difficulty_screen:
+                    if easy_button.collidepoint(local):
+                        difficulty_screen = False
+                        game_screen = gs.vs_ai = True
+                        gs.difficulty = 2
+                    elif medium_button.collidepoint(local):
+                        difficulty_screen = False
+                        game_screen = gs.vs_ai = True
+                        gs.difficulty = 4
+                    elif hard_button.collidepoint(local):
+                        difficulty_screen = False
+                        game_screen = gs.vs_ai = True
+                        gs.difficulty = 6
+
                 elif game_screen and local[0] > 600:
                     if quit_button.collidepoint(local):
                         game_screen = gs.players_turn = gs.vs_ai = False
@@ -214,6 +240,17 @@ def main():
 
             py.draw.rect(screen, py.Color('gray45'), exit_button)
             screen.blit(exit_text, exit_text_center)
+        elif difficulty_screen:
+            screen.fill('bisque2')
+            py.draw.rect(screen, py.Color('gray45'), easy_button)
+            screen.blit(easy_text, easy_text_center)
+
+            py.draw.rect(screen, py.Color('gray45'), medium_button)
+            screen.blit(medium_text, medium_text_center)
+
+            py.draw.rect(screen, py.Color('gray45'), hard_button)
+            screen.blit(hard_text, hard_text_center)
+
         elif turn_screen:
             screen.fill('bisque2')
             py.draw.rect(screen, py.Color('gray45'), first_button)

@@ -14,26 +14,17 @@ IMAGES = {1: py.transform.scale(py.image.load('../Constants/Images/wt.png'), (SQ
 
 class Game_State():
     def __init__(self, ):
-        self.board = [[0, 1, 0, 0, 0, 1, 0, 1],
-[1, 0, 1, 0, 1, 0, 1, 0],
-[0, 1, 0, 1, 0, 0, 0, 1],
-[0, 0, 0, 0, 1, 0, 1, 0],
-[0, 2, 0, 2, 0, 2, 0, 0],
-[2, 0, 0, 0, 0, 0, 2, 0],
-[0, 0, 0, 2, 0, 2, 0, 2],
-[2, 0, 2, 0, 2, 0, 2, 0]]
+        self.board = [
+            [0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0],
+            [0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [2, 0, 2, 0, 2, 0, 2, 0],
+            [0, 2, 0, 2, 0, 2, 0, 2],
+            [2, 0, 2, 0, 2, 0, 2, 0]
 
-        # [
-        #     [0, 1, 0, 1, 0, 1, 0, 1],
-        #     [1, 0, 1, 0, 1, 0, 1, 0],
-        #     [0, 1, 0, 1, 0, 1, 0, 1],
-        #     [0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0],
-        #     [2, 0, 2, 0, 2, 0, 2, 0],
-        #     [0, 2, 0, 2, 0, 2, 0, 2],
-        #     [2, 0, 2, 0, 2, 0, 2, 0]
-        #
-        # ]
+        ]
         self.black_turn = True
         self.vs_ai = False
         self.players_turn = self.is_first = False
@@ -42,6 +33,7 @@ class Game_State():
         self.hint_board = set()
         self.ideal_piece = self.ideal_move = None
         self.turn_log = []
+        self.difficulty = 5
 
     def draw_board(self, screen, board):
         for row in range(BOARD_SIZE):
@@ -83,9 +75,6 @@ class Game_State():
 
             if not self.more_jumps and real_move:
                 self.black_turn = not self.black_turn
-        # else ???
-        # print(move_or_jump(Piece((sq1_row, sq1_col), 'king' if piece > 2 else 'pawn', 'black' if piece % 2 == 0 else 'white'), board))
-        # print(move_or_jump(Piece((sq1_col, sq1_row), 'king' if piece > 2 else 'pawn', 'black' if piece % 2 == 0 else 'white'), board))
 
     def can_jump(self, board, sq1):
         piece = board[sq1[0]][sq1[1]]
@@ -315,7 +304,6 @@ class Game_State():
                 if board[row][col] != 0:
                     if maximizing_player and self.is_black(board[row][col]):
                         jumps = self.possible_jumps(board, (row, col), False, maximizing_player)
-                        print(jumps)
                         all_jumps = []
                         for jump in jumps:
                             if jump: all_jumps.append(jump)
@@ -450,8 +438,7 @@ class Game_State():
 
     def ai_move(self, board):
 
-        max_value, ideal_piece, ideal_move = self.alphabeta(board, 5, float('-inf'), float('inf'), self.black_turn)
-        print(ideal_move)
+        max_value, ideal_piece, ideal_move = self.alphabeta(board, self.difficulty, float('-inf'), float('inf'), self.black_turn)
         sq1 = ideal_piece
         for possible_sq in ideal_move:  # single move
             self.move(board, sq1, possible_sq, self.black_turn, True)
