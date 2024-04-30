@@ -35,8 +35,8 @@ class Game_State():
         #
         # ]
         self.black_turn = True
-        self.players_turn = True
-        self.is_first = False
+        self.vs_ai = False
+        self.players_turn = self.is_first = False
         self.more_jumps = False
         self.last_piece = None
         self.hint_board = set()
@@ -52,7 +52,7 @@ class Game_State():
                 if piece != 0:
                     screen.blit(IMAGES[piece], (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
-    def move(self, board, sq1, sq2):
+    def move(self, board, sq1, sq2, maximizing_player, real_move):
         sq1_row = sq1[0]
         sq1_col = sq1[1]
         sq2_row = sq2[0]
@@ -72,11 +72,16 @@ class Game_State():
                 board[row][col] = 0
                 self.more_jumps = self.can_jump(board, sq2)
                 self.last_piece = (sq2_row, sq2_col)
-                if not self.more_jumps:
+                if board[sq2_row][sq2_col] <= 2 and ((maximizing_player and sq2_row == 0) or (not maximizing_player and sq2_row == 7)):
+                    board[sq2_row][sq2_col] += 2
+                if not self.more_jumps and real_move:
                     self.black_turn = not self.black_turn
 
         else:
-            if not self.more_jumps:
+            if board[sq2_row][sq2_col] <= 2 and ((maximizing_player and sq2_row == 0) or (not maximizing_player and sq2_row == 7)):
+                board[sq2_row][sq2_col] += 2
+
+            if not self.more_jumps and real_move:
                 self.black_turn = not self.black_turn
         # else ???
         # print(move_or_jump(Piece((sq1_row, sq1_col), 'king' if piece > 2 else 'pawn', 'black' if piece % 2 == 0 else 'white'), board))
@@ -134,50 +139,88 @@ class Game_State():
         left = col - 2
         possible_places = []
 
+
         if maximizing_player:
             if self.within_bounds(up, right) and self.is_white(board[row - 1][col + 1]):  # moving up on board
                 if board[up][right] == 0:
-                    possible_places.append([(up, right)])
-                    possible_places[-1].extend(self.possible_jumps(board, (up, right), True, maximizing_player))
+                    jumps = self.possible_jumps(board, (up, right), True, maximizing_player)
+                    if jumps:
+                        for jump in jumps:
+                            possible_places.append([(up, right)])
+                            possible_places[-1].extend(jump)
+                    else:
+                        possible_places.append([(up, right)])
             if self.within_bounds(up, left) and self.is_white(board[row - 1][col - 1]):
                 if board[up][left] == 0:
-                    possible_places.append([(up, left)])
-                    possible_places[-1].extend(self.possible_jumps(board, (up, left), True, maximizing_player))
+                    jumps = self.possible_jumps(board, (up, left), True, maximizing_player)
+                    if jumps:
+                        for jump in jumps:
+                            possible_places.append([(up, left)])
+                            possible_places[-1].extend(jump)
+                    else:
+                        possible_places.append([(up, left)])
+
             if piece == 4:  # black king
                 if self.within_bounds(down, right) and self.is_white(board[row + 1][col + 1]):  # moving down on board
                     if board[down][right] == 0:
-                        possible_places.append([(down, right)])
-                        possible_places[-1].extend(self.possible_jumps(board, (down, right), True, maximizing_player))
+                        jumps = self.possible_jumps(board, (down, right), True, maximizing_player)
+                        if jumps:
+                            for jump in jumps:
+                                possible_places.append([(down, right)])
+                                possible_places[-1].extend(jump)
+                        else:
+                            possible_places.append([(down, right)])
                 if self.within_bounds(down, left) and self.is_white(board[row + 1][col - 1]):
                     if board[down][left] == 0:
-                        possible_places.append([(down, left)])
-                        possible_places[-1].extend(self.possible_jumps(board, (down, left), True, maximizing_player))
-
+                        jumps = self.possible_jumps(board, (down, left), True, maximizing_player)
+                        if jumps:
+                            for jump in jumps:
+                                possible_places.append([(down, left)])
+                                possible_places[-1].extend(jump)
+                        else:
+                            possible_places.append([(down, left)])
         else:
             if self.within_bounds(down, right) and self.is_black(board[row + 1][col + 1]):
                 if board[down][right] == 0:
-                    possible_places.append([(down, right)])
-                    possible_places[-1].extend(self.possible_jumps(board, (down, right), True, maximizing_player))
+                    jumps = self.possible_jumps(board, (down, right), True, maximizing_player)
+                    if jumps:
+                        for jump in jumps:
+                            possible_places.append([(down, right)])
+                            possible_places[-1].extend(jump)
+                    else:
+                        possible_places.append([(down, right)])
             if self.within_bounds(down, left) and self.is_black(board[row + 1][col - 1]):
                 if board[down][left] == 0:
-                    possible_places.append([(down, left)])
-                    possible_places[-1].extend(self.possible_jumps(board, (down, left), True, maximizing_player))
+                    jumps = self.possible_jumps(board, (down, left), True, maximizing_player)
+                    if jumps:
+                        for jump in jumps:
+                            possible_places.append([(down, left)])
+                            possible_places[-1].extend(jump)
+                    else:
+                        possible_places.append([(down, left)])
 
             if piece == 3:  # white king
                 if self.within_bounds(up, right) and self.is_black(board[row - 1][col + 1]):
                     if board[up][right] == 0:
-                        possible_places.append([(up, right)])
-                        possible_places[-1].extend(self.possible_jumps(board, (up, right), True, maximizing_player))
+                        jumps = self.possible_jumps(board, (up, right), True, maximizing_player)
+                        if jumps:
+                            for jump in jumps:
+                                possible_places.append([(up, right)])
+                                possible_places[-1].extend(jump)
+                        else:
+                            possible_places.append([(up, right)])
                 if self.within_bounds(up, left) and self.is_black(board[row - 1][col - 1]):
                     if board[up][left] == 0:
-                        possible_places.append([(up, left)])
-                        possible_places[-1].extend(self.possible_jumps(board, (up, left), True, maximizing_player))
+                        jumps = self.possible_jumps(board, (up, left), True, maximizing_player)
+                        if jumps:
+                            for jump in jumps:
+                                possible_places.append([(up, left)])
+                                possible_places[-1].extend(jump)
+                        else:
+                            possible_places.append([(up, left)])
 
-        combined_list = []
-        if extra:
-            for sublist in possible_places:
-                combined_list += sublist
-        return combined_list if extra else possible_places
+
+        return possible_places
 
     def possible_moves(self, board, sq1, maximizing_player):
 
@@ -256,6 +299,12 @@ class Game_State():
     def is_white(self, piece):
         return True if piece % 2 != 0 else False
 
+    def is_black_king(self, row):
+        return True if row == 0 else False
+
+    def is_white_king(self, row):
+        return True if row == 7 else False
+
     def within_bounds(self, row, col):
         return True if 0 <= row <= 7 and 0 <= col <= 7 else False
 
@@ -266,6 +315,7 @@ class Game_State():
                 if board[row][col] != 0:
                     if maximizing_player and self.is_black(board[row][col]):
                         jumps = self.possible_jumps(board, (row, col), False, maximizing_player)
+                        print(jumps)
                         all_jumps = []
                         for jump in jumps:
                             if jump: all_jumps.append(jump)
@@ -335,7 +385,7 @@ class Game_State():
                 gs.board = copy.deepcopy(board)
                 sq1 = movable_piece
                 for possible_sq in possible_move: # single move
-                    gs.move(gs.board, sq1, possible_sq)
+                    gs.move(gs.board, sq1, possible_sq, maximizing_player, False)
                     sq1 = possible_sq
 
                 all_possible_boards.append((movable_piece, possible_move, gs.board))
@@ -398,6 +448,16 @@ class Game_State():
 
         max_value, self.ideal_piece, self.ideal_move = self.alphabeta(board, 5, float('-inf'), float('inf'), self.black_turn)
 
+    def ai_move(self, board):
+
+        max_value, ideal_piece, ideal_move = self.alphabeta(board, 5, float('-inf'), float('inf'), self.black_turn)
+        print(ideal_move)
+        sq1 = ideal_piece
+        for possible_sq in ideal_move:  # single move
+            self.move(board, sq1, possible_sq, self.black_turn, True)
+            sq1 = possible_sq
+
+
     def pre_draw_hint(self, screen, board):
         sq1 = self.ideal_piece
         for sq2 in self.ideal_move:
@@ -423,18 +483,4 @@ class Game_State():
                 piece = board[row][col]
                 if piece != 0:
                     screen.blit(IMAGES[piece], (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
-
-
-gs = Game_State()
-gs.board = [[0, 1, 0, 0, 0, 1, 0, 1],
-[1, 0, 1, 0, 1, 0, 1, 0],
-[0, 1, 0, 1, 0, 0, 0, 1],
-[0, 0, 0, 0, 1, 0, 1, 0],
-[0, 2, 0, 2, 0, 2, 0, 0],
-[2, 0, 0, 0, 0, 0, 2, 0],
-[0, 0, 0, 2, 0, 2, 0, 2],
-[2, 0, 2, 0, 2, 0, 2, 0]]
-
-# print(gs.find_captured_pieces(gs.board))
-# print(gs.find_captured_pieces(gs.board))
 

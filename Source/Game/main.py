@@ -76,7 +76,7 @@ def main():
                         game_screen = True
                         start_screen = gs.vs_ai = False
                     if ai_button.collidepoint(local):
-                        turn_screen = gs.vs_ai = True
+                        turn_screen = True
                         start_screen = False
                     if rules_button.collidepoint(local):
                         rules_screen = True
@@ -85,19 +85,19 @@ def main():
                         run = False
                 elif turn_screen:
                     if first_button.collidepoint(local):
-                        gs.players_turn = game_screen = True
+                        gs.black_turn = game_screen = gs.players_turn = gs.vs_ai = True
                         turn_screen = False
                     elif second_button.collidepoint(local):
-                        gs.players_turn = turn_screen = False
-                        game_screen = True
+                        gs.black_turn = turn_screen = gs.players_turn = False
+                        game_screen = gs.vs_ai = True
                 elif rules_screen:
                     if back_button.collidepoint(local):
                         rules_screen = False
                         start_screen = True
                 elif game_screen and local[0] > 600:
                     if quit_button.collidepoint(local):
-                        game_screen = False
-                        start_screen = True
+                        game_screen = gs.players_turn = gs.vs_ai = False
+                        start_screen = gs.black_turn = True
                         selected_sq = ()
                         user_clicks = []
                         gs = Game_State()
@@ -110,6 +110,15 @@ def main():
                             gs.create_hint(display_surface, board)
                             gs.pre_draw_hint(display_surface, board)
                 elif game_screen:
+
+                    if not gs.find_possible_moves(board, gs.black_turn):
+                        game_screen = gs.players_turn = gs.vs_ai = False
+                        start_screen = gs.black_turn = True
+                        selected_sq = ()
+                        user_clicks = []
+                        gs = Game_State()
+                        board = gs.board
+
                     col = local[0] // SQUARE_SIZE
                     row = local[1] // SQUARE_SIZE
                     # GENERAL CLICK RULES
@@ -162,14 +171,12 @@ def main():
                                             ((row - 1) and (col - 1)) != 0) or (((row - 1) and (col + 1)) != 0):
                                         print("There is a piece here. Captured it.")
                                         hint = False
-                                        move = gs.move(gs.board, user_clicks[0], user_clicks[1])
-                                        if gs.vs_ai:  # game + vs ai + not first make players_turn = false when turn is done
-                                            gs.players_turn = not gs.players_turn
+                                        move = gs.move(gs.board, user_clicks[0], user_clicks[1], gs.black_turn, True)
+                                        gs.players_turn = False
                                 else:
                                     hint = False
-                                    move = gs.move(gs.board, user_clicks[0], user_clicks[1])
-                                    if gs.vs_ai:  # game + vs ai + not first make players_turn = false when turn is done
-                                        gs.players_turn = not gs.players_turn
+                                    move = gs.move(gs.board, user_clicks[0], user_clicks[1], gs.black_turn, True)
+                                    gs.players_turn = False
 
                             else:  # A piece is there and space is not empty
                                 print("Invalid space. A piece is there.")
@@ -190,8 +197,10 @@ def main():
         # screen 3 - rules
         # screen 5 - game
 
-        if not gs.players_turn:  # ai makes move here
-            pass
+        if gs.vs_ai and not gs.players_turn:  # ai makes move here
+            gs.ai_move(board)
+            gs.players_turn = not gs.players_turn
+
         if start_screen:
             screen.fill('bisque2')
             py.draw.rect(screen, py.Color('gray45'), player_button)
