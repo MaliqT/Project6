@@ -105,6 +105,10 @@ def main():
 
                     if hint_button.collidepoint(local):  # show hint
                         hint = not hint
+                        if hint:
+                            gs.hint_board = set()
+                            gs.create_hint(display_surface, board)
+                            gs.pre_draw_hint(display_surface, board)
                 elif game_screen:
                     col = local[0] // SQUARE_SIZE
                     row = local[1] // SQUARE_SIZE
@@ -215,7 +219,7 @@ def main():
 
             print_rules(screen)
         elif game_screen:
-            gs.create_hint(display_surface, board) if hint else gs.draw_board(display_surface, board)
+            gs.draw_hint(display_surface, board) if hint else gs.draw_board(display_surface, board)
             screen.blit(display_surface, (0, 0))
 
             py.draw.rect(screen, py.Color('gray45'), quit_button)

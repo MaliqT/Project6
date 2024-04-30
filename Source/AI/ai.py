@@ -3,6 +3,7 @@ import copy
 
 from Source.Game.piece import *
 
+BOARD_SIZE = 8
 
 board = [
     #0  1  2  3  4  5  6  7
@@ -270,8 +271,31 @@ a = moves_and_results(board, p2)
 
 
 # a = moves_and_results(board, p1)
-# a = all_posible_moves(board, p1)
+a = all_posible_moves(board, p1)
 # m = move_or_jump(p1.pieces[8], board)
-
+print(a)
 # c
-a
+# def heuristic_value(node):
+
+# def alphabeta(node, depth, alpha, beta, maximizing_player):   # initial call: alphabeta(curr_state, depth, −inf, inf, True)
+#
+#     if depth == 0 or node is terminal:
+#         return heuristic_value(node) #  the heuristic value of node
+#
+#     if maximizing_player:
+#         value = float('-inf')
+#         for each child of node:
+#             value = max(value, alphabeta(child, depth - 1, alpha, beta, False))
+#             alpha = max(alpha, value)
+#             if value >= beta:
+#                 break
+#         return value
+#     else:
+#         value = float('inf')
+#         for each child of node:
+#             value = min(value, alphabeta(child, depth - 1, alpha, beta, True))
+#             beta = min(beta, value)
+#             if value <= alpha:
+#                 break
+#         return value
+
