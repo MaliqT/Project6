@@ -64,7 +64,7 @@ def main():
     hard_text_center = hard_text.get_rect(center=hard_button.center)
 
 
-
+    # Just prints the board to the terminal for testing purposes
     for i in board:
         print(i)
 
@@ -178,8 +178,7 @@ def main():
 
                         # IMPLEMENT MOVE RULES HERE
 
-                        if (gs.black_turn and (row > sq1_row)) or (
-                                not gs.black_turn and (sq1_row > row)):
+                        if (gs.black_turn and (row > sq1_row) and (sq1 != 4)) or (not gs.black_turn and (sq1_row > row) and (sq1 != 3)):
                             print("Invalid move! A regular piece cannot move backwards.")
                         elif abs(sq1_row - row) != abs(sq1_col - col):
                             print("Invalid move! A piece can only move diagonally.")
