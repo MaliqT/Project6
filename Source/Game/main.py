@@ -178,10 +178,15 @@ def main():
 
                         # IMPLEMENT MOVE RULES HERE
 
+                        # Check if pieces are regular and if they are not moving backwards
                         if (gs.black_turn and (row > sq1_row) and (sq1 != 4)) or (not gs.black_turn and (sq1_row > row) and (sq1 != 3)):
                             print("Invalid move! A regular piece cannot move backwards.")
+
+                        # Check if pieces are not moving to adjacent square spaces
                         elif abs(sq1_row - row) != abs(sq1_col - col):
                             print("Invalid move! A piece can only move diagonally.")
+
+                        # Checks if pieces are able to take another piece and must do so
                         elif gs.more_jumps and user_clicks[0] != gs.last_piece:
                             print("Invalid move! Must complete another jump.")
                         else:
